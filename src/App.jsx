@@ -1,19 +1,26 @@
 import React, { useState } from "react";
 import Dashboard from "./pages/Dashboard";
-import RegistryTable from "./pages/RegistryTable";
-import ClerkPortal from "./pages/ClerkPortal";
-import ManageRecords from "./pages/ManageRecords"; // Add this import
+import DocumentRepository from "./pages/DocumentRepository";
+import IntakeWorkspace from "./pages/IntakeWorkspace";
+import ManageRecords from "./pages/ManageRecords";
+import DepartmentInbox from "./pages/DepartmentInbox";
 import Login from "./pages/Login";
-import { LayoutDashboard, Table, LogOut, User, FolderCog } from "lucide-react"; // Import FolderCog
+import {
+  LayoutDashboard,
+  LogOut,
+  User,
+  FolderCog,
+  Inbox,
+  FolderTree,
+  UploadCloud,
+} from "lucide-react";
 
 function App() {
   const [currentUser, setCurrentUser] = useState(null);
   const [activeTab, setActiveTab] = useState("dashboard");
-  const [activeFilter, setActiveFilter] = useState("All");
 
-  const handleNavigateWithFilter = (filterStatus) => {
-    setActiveFilter(filterStatus);
-    setActiveTab("registry");
+  const handleNavigate = (page) => {
+    setActiveTab(page);
   };
 
   if (!currentUser) {
@@ -25,7 +32,11 @@ function App() {
       {/* Top Navigation Bar */}
       <div className="bg-white border-b border-[#DDD5BE] px-8 py-3 flex justify-between items-center z-10 shadow-xs relative">
         <div className="flex gap-2">
-          {currentUser.role === "admin" ? (
+          {/* 
+            The Admin and Registry Clerk roles are now merged. 
+            The Admin sees the Dashboard, Intake, Repository, and Manage tabs.
+          */}
+          {currentUser.role === "admin" && (
             <>
               <button
                 onClick={() => setActiveTab("dashboard")}
@@ -38,20 +49,25 @@ function App() {
                 <LayoutDashboard className="h-4 w-4" /> Dashboard
               </button>
               <button
-                onClick={() => {
-                  setActiveFilter("All");
-                  setActiveTab("registry");
-                }}
+                onClick={() => setActiveTab("intake")}
                 className={`flex items-center gap-2 px-4 py-2 text-sm font-bold transition cursor-pointer ${
-                  activeTab === "registry"
+                  activeTab === "intake"
                     ? "bg-[#1E2B3C] text-[#FFDB58]"
                     : "text-[#1E2B3C] hover:bg-[#FAF8F1]"
                 }`}
               >
-                <Table className="h-4 w-4" /> Registry Directory
+                <UploadCloud className="h-4 w-4" /> Intake & Routing
               </button>
-
-              {/* NEW MANAGE RECORDS BUTTON */}
+              <button
+                onClick={() => setActiveTab("repository")}
+                className={`flex items-center gap-2 px-4 py-2 text-sm font-bold transition cursor-pointer ${
+                  activeTab === "repository"
+                    ? "bg-[#1E2B3C] text-[#FFDB58]"
+                    : "text-[#1E2B3C] hover:bg-[#FAF8F1]"
+                }`}
+              >
+                <FolderTree className="h-4 w-4" /> Repository
+              </button>
               <button
                 onClick={() => setActiveTab("manage")}
                 className={`flex items-center gap-2 px-4 py-2 text-sm font-bold transition cursor-pointer ${
@@ -60,17 +76,20 @@ function App() {
                     : "text-[#1E2B3C] hover:bg-[#FAF8F1]"
                 }`}
               >
-                <FolderCog className="h-4 w-4" /> Manage Records
+                <FolderCog className="h-4 w-4" /> Manage
               </button>
             </>
-          ) : (
+          )}
+
+          {/* Department Role sees only the Inbox */}
+          {currentUser.role === "department" && (
             <div className="flex items-center gap-2 px-4 py-2 text-[#1E2B3C] font-bold">
-              Ministry of ICT · Front Desk Portal
+              <Inbox className="h-5 w-5 text-[#008000]" /> Digital Inbox View
             </div>
           )}
         </div>
 
-        {/* Right side: User Profile & Logout */}
+        {/* User Profile & Logout */}
         <div className="flex items-center gap-4 border-l border-[#DDD5BE] pl-4">
           <div className="text-right">
             <p className="text-sm font-bold text-[#1E2B3C]">
@@ -80,14 +99,10 @@ function App() {
               {currentUser.department}
             </p>
           </div>
-          <div className="h-9 w-9 bg-[#FAF8F1] flex items-center justify-center text-[#1E2B3C] border border-[#DDD5BE]">
-            <User className="h-4 w-4" />
-          </div>
           <button
             onClick={() => {
               setCurrentUser(null);
               setActiveTab("dashboard");
-              setActiveFilter("All");
             }}
             className="text-[#5B5240] hover:text-[#dc2626] transition ml-1 p-2 hover:bg-red-50 cursor-pointer"
             title="Log Out"
@@ -97,17 +112,19 @@ function App() {
         </div>
       </div>
 
-      {/* Render active page based on role */}
+      {/* Render active page based on role and tab */}
       <div className="flex-1">
-        {currentUser.role === "clerk" ? (
-          <ClerkPortal />
+        {currentUser.role === "department" ? (
+          <DepartmentInbox />
         ) : activeTab === "dashboard" ? (
-          <Dashboard onNavigate={handleNavigateWithFilter} />
+          <Dashboard onNavigate={handleNavigate} />
+        ) : activeTab === "intake" ? (
+          <IntakeWorkspace />
+        ) : activeTab === "repository" ? (
+          <DocumentRepository />
         ) : activeTab === "manage" ? (
           <ManageRecords />
-        ) : (
-          <RegistryTable initialFilter={activeFilter} />
-        )}
+        ) : null}
       </div>
     </div>
   );

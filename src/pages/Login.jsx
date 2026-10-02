@@ -9,22 +9,26 @@ export default function Login({ onLogin }) {
   const handleLogin = (e) => {
     e.preventDefault();
 
-    // Demo routing logic
+    // EDMS Demo routing logic
     if (email.toLowerCase().includes("admin")) {
       onLogin({
         name: "System Admin",
         role: "admin",
-        department: "Ministry HQ",
+        department: "Ministry HQ & Registry",
       });
-    } else if (email.toLowerCase().includes("desk")) {
+    } else if (
+      email.toLowerCase().includes("desk") ||
+      email.toLowerCase().includes("dept")
+    ) {
+      // Routes to the Department Inbox to demonstrate read-receipts
       onLogin({
-        name: "Registry Clerk",
-        role: "clerk",
-        department: "Central Registry",
+        name: "IT Director",
+        role: "department",
+        department: "Central Computing",
       });
     } else {
       setError(
-        'Invalid credentials. For this demo, use an email containing "admin" or "desk".',
+        'Invalid credentials. For this demo, use an email containing "admin" or "dept".',
       );
     }
   };
@@ -34,8 +38,9 @@ export default function Login({ onLogin }) {
     setEmail("admin@ict.gov.zw");
     setPassword("demo123");
   };
-  const fillClerk = () => {
-    setEmail("desk@ict.gov.zw");
+
+  const fillDepartment = () => {
+    setEmail("dept@ict.gov.zw");
     setPassword("demo123");
   };
 
@@ -99,14 +104,14 @@ export default function Login({ onLogin }) {
 
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition flex items-center justify-center gap-2 shadow-md"
+              className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition flex items-center justify-center gap-2 shadow-md cursor-pointer"
             >
               Authenticate <ArrowRight className="h-5 w-5" />
             </button>
           </form>
         </div>
 
-        {/* Demo Helpers - You can remove these before actual production */}
+        {/* Demo Helpers */}
         <div className="bg-slate-50 p-6 border-t border-slate-100">
           <p className="text-xs text-slate-500 text-center font-semibold uppercase tracking-wider mb-3">
             Quick Login (Demo Only)
@@ -114,15 +119,15 @@ export default function Login({ onLogin }) {
           <div className="flex gap-2">
             <button
               onClick={fillAdmin}
-              className="flex-1 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-100 transition shadow-sm"
+              className="flex-1 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-100 transition shadow-sm cursor-pointer"
             >
               Load Admin
             </button>
             <button
-              onClick={fillClerk}
-              className="flex-1 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-100 transition shadow-sm"
+              onClick={fillDepartment}
+              className="flex-1 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-100 transition shadow-sm cursor-pointer"
             >
-              Load Clerk
+              Load Dept Inbox
             </button>
           </div>
         </div>

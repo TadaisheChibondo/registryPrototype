@@ -2,7 +2,8 @@ import React from "react";
 import { registryStats, folders, recentActivity } from "../data/mockData";
 
 export default function Dashboard({ onNavigate }) {
-  const externalCheckouts = folders.filter((f) => f.checkedOutTo !== null);
+  // Simulating active routed documents by using the externalCheckouts mock data
+  const activeRoutes = folders.filter((f) => f.checkedOutTo !== null);
 
   return (
     <div className="min-h-screen bg-[#F2EEE3] font-sans">
@@ -17,7 +18,7 @@ export default function Dashboard({ onNavigate }) {
             </div>
             <div>
               <h1 className="text-2xl font-bold leading-tight">
-                Chain of Custody Registry
+                Electronic Document Management
               </h1>
               <p className="text-sm text-[#B9C2CC] mt-0.5">
                 Ministry of ICT · Central Records Division
@@ -29,12 +30,15 @@ export default function Dashboard({ onNavigate }) {
             <div>
               <input
                 type="text"
-                placeholder="Scan or enter tracking ID"
+                placeholder="Search digitized records..."
                 className="w-64 bg-[#26374C] text-sm text-[#F2EEE3] placeholder:text-[#8B94A0] px-3 py-2.5 border border-[#3A4C63] focus:outline-none focus:border-[#FFDB58] transition"
               />
             </div>
-            <button className="bg-[#008000] text-white text-sm font-semibold px-5 py-2.5 hover:bg-[#006b00] transition shadow-sm cursor-pointer">
-              Log new check-out
+            <button
+              onClick={() => onNavigate && onNavigate("Intake")}
+              className="bg-[#008000] text-white text-sm font-semibold px-5 py-2.5 hover:bg-[#006b00] transition shadow-sm cursor-pointer"
+            >
+              Intake New Document
             </button>
           </div>
         </div>
@@ -42,22 +46,25 @@ export default function Dashboard({ onNavigate }) {
 
       <main className="max-w-7xl mx-auto px-8 py-8">
         {/* =========================================
-            1. REGISTRY HEALTH
+            1. EDMS HEALTH
             ========================================= */}
         <div className="bg-white border border-[#DDD5BE] mb-6 grid grid-cols-2 md:grid-cols-4 divide-x divide-[#E4DECC] shadow-sm">
-          <Stat label="Files tracked" value={registryStats.totalFolders} />
           <Stat
-            label="Available in Storage"
+            label="Total Digitized Records"
+            value={registryStats.totalFolders}
+          />
+          <Stat
+            label="Routed Successfully"
             value={registryStats.availableInRegistry}
             tint="#166534"
           />
           <Stat
-            label="Currently checked out"
+            label="Pending Read Receipts"
             value={registryStats.currentlyCheckedOut}
             tint="#8A6D00"
           />
           <Stat
-            label="Total Overdue"
+            label="Urgent Unread Alerts"
             value={registryStats.overdue}
             tint={registryStats.overdue > 0 ? "#dc2626" : undefined}
             flag={registryStats.overdue > 0}
@@ -65,46 +72,46 @@ export default function Dashboard({ onNavigate }) {
         </div>
 
         {/* =========================================
-            2. ATTENTION REQUIRED (The Daily Workflow)
+            2. ATTENTION REQUIRED (Digital Workflow)
             ========================================= */}
         <div className="mb-8 grid grid-cols-1 md:grid-cols-3 gap-6">
           <ActionCard
             count={4}
-            label="Overdue files"
-            action="Review files"
+            label="Urgent Unread"
+            action="Follow up"
             theme="danger"
             onClick={() => onNavigate && onNavigate("Overdue")}
           />
           <ActionCard
             count={7}
-            label="Due today"
-            action="Process returns"
+            label="Pending Receipts"
+            action="View routing status"
             theme="warning"
             onClick={() => onNavigate && onNavigate("Checked Out")}
           />
           <ActionCard
             count={3}
-            label="Missing / disputed"
-            action="Resolve status"
+            label="Drafts / Unrouted"
+            action="Complete intake"
             theme="neutral"
-            onClick={() => onNavigate && onNavigate("Lost")}
+            onClick={() => onNavigate && onNavigate("Draft")}
           />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
           {/* =========================================
-              3. CURRENT CUSTODY
+              3. ACTIVE ROUTING TABLE
               ========================================= */}
           <div className="lg:col-span-2 bg-white border border-[#DDD5BE] shadow-sm flex flex-col">
             <div className="flex items-baseline justify-between px-6 pt-5 pb-4 border-b border-[#DDD5BE] bg-[#FAF8F1]">
               <h2 className="text-lg font-bold text-[#1E2B3C]">
-                Current Custody
+                Active Routing Status
               </h2>
               <button
                 onClick={() => onNavigate && onNavigate("All")}
                 className="text-sm font-semibold text-[#008000] hover:underline cursor-pointer"
               >
-                View full register
+                View master directory
               </button>
             </div>
 
@@ -113,19 +120,19 @@ export default function Dashboard({ onNavigate }) {
                 <thead>
                   <tr className="text-sm font-semibold text-[#5B5240] border-b border-[#DDD5BE]">
                     <th className="font-semibold px-6 py-3">Tracking ID</th>
-                    <th className="font-semibold py-3">In possession of</th>
+                    <th className="font-semibold py-3">Routed To</th>
                     <th className="font-semibold py-3">Status</th>
                     <th className="font-semibold py-3 pr-6 text-right">
-                      Due back
+                      Dispatch Date
                     </th>
                   </tr>
                 </thead>
                 <tbody>
-                  {externalCheckouts.map((folder, i) => (
+                  {activeRoutes.map((folder, i) => (
                     <tr
                       key={folder.id}
                       className={`hover:bg-[#F7F4EA] transition ${
-                        i !== externalCheckouts.length - 1
+                        i !== activeRoutes.length - 1
                           ? "border-b border-[#EDE7D6]"
                           : ""
                       }`}
@@ -147,7 +154,13 @@ export default function Dashboard({ onNavigate }) {
                         </p>
                       </td>
                       <td className="py-4">
-                        <StatusBadge status={folder.status} />
+                        <StatusBadge
+                          status={
+                            folder.status === "Overdue"
+                              ? "Unread"
+                              : "Dispatched"
+                          }
+                        />
                       </td>
                       <td className="py-4 pr-6 text-right">
                         <p
@@ -157,6 +170,7 @@ export default function Dashboard({ onNavigate }) {
                               : "text-[#1E2B3C]"
                           }`}
                         >
+                          {/* Re-purposing the expectedReturn mock data date as a dispatch date for the EDMS demo */}
                           {new Date(
                             folder.checkedOutTo.expectedReturn,
                           ).toLocaleDateString()}
@@ -175,7 +189,7 @@ export default function Dashboard({ onNavigate }) {
           <div className="bg-white border border-[#DDD5BE] shadow-sm flex flex-col">
             <div className="px-6 pt-5 pb-4 border-b border-[#DDD5BE] bg-[#FAF8F1]">
               <h2 className="text-lg font-bold text-[#1E2B3C]">
-                Recent Activity
+                System Activity Log
               </h2>
             </div>
 
@@ -223,8 +237,9 @@ export default function Dashboard({ onNavigate }) {
               Weekly Insight
             </h3>
             <p className="text-sm font-medium text-[#B9C2CC]">
-              Checkout volume is up <strong className="text-white">14%</strong>{" "}
-              this week. The majority of requests originated from the{" "}
+              Digital routing volume is up{" "}
+              <strong className="text-white">14%</strong> this week. The
+              majority of documents were dispatched to the{" "}
               <strong className="text-white">Ministry of Health</strong>.
             </p>
           </div>
@@ -252,7 +267,7 @@ function Stat({ label, value, tint, flag }) {
         >
           {typeof value === "number" ? value.toLocaleString() : value}
         </p>
-        {flag && <StatusDot status="Overdue" />}
+        {flag && <StatusDot status="Unread" />}
       </div>
     </div>
   );
@@ -285,7 +300,6 @@ function ActionCard({ count, label, action, theme, onClick }) {
       onClick={onClick}
       className={`border px-5 py-4 shadow-sm transition hover:shadow-md cursor-pointer flex flex-col justify-between gap-3 ${styles.card}`}
     >
-      {/* Top Row: Dot + Single Clean Label */}
       <div className="flex items-center gap-2">
         <StatusDot color={styles.dot} />
         <span className="text-sm font-bold tracking-wide uppercase">
@@ -293,7 +307,6 @@ function ActionCard({ count, label, action, theme, onClick }) {
         </span>
       </div>
 
-      {/* Bottom Row: Large Count on Left, Non-Wrapping Action Link on Right */}
       <div className="flex items-baseline justify-between gap-4">
         <p className={`text-3xl font-black leading-none ${styles.count}`}>
           {count}
@@ -324,14 +337,10 @@ function StatusBadge({ status }) {
 
 function StatusDot({ status, color }) {
   const statusColors = {
-    Available: "#008000",
-    "Checked Out": "#008000",
-    Overdue: "#dc2626",
-    "Checked out": "#008000",
-    Returned: "#008000",
-    "Audit flag": "#dc2626",
-    "Due today": "#8A6D00",
-    "Missing / disputed": "#f1ab12",
+    "Read Receipt": "#008000",
+    Dispatched: "#8A6D00",
+    Unread: "#dc2626",
+    "Routing error": "#f1ab12",
   };
 
   return (
@@ -344,18 +353,18 @@ function StatusDot({ status, color }) {
 }
 
 function activityStatus(action) {
-  if (action === "CHECK-OUT") return "Checked out";
-  if (action === "CHECK-IN") return "Returned";
-  return "Audit flag";
+  if (action === "CHECK-OUT") return "Dispatched";
+  if (action === "CHECK-IN") return "Read Receipt";
+  return "Routing error";
 }
 
 function formatActivityText(action, target) {
   if (action === "CHECK-OUT") {
-    return `Checked out to ${target}`;
+    return `Digitally routed to ${target}`;
   }
   if (action === "CHECK-IN") {
     const cleaned = target.replace(/^returned by\s+/i, "");
-    return `Returned by ${cleaned}`;
+    return `Opened and viewed by ${cleaned}`;
   }
-  return `Flagged: ${target}`;
+  return `Failed to route: ${target}`;
 }
