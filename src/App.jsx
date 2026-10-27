@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import SystemLogs from "./pages/SystemLogs";
 import Dashboard from "./pages/Dashboard";
 import DocumentRepository from "./pages/DocumentRepository";
 import IntakeWorkspace from "./pages/IntakeWorkspace";
@@ -13,6 +14,7 @@ import {
   Inbox,
   FolderTree,
   UploadCloud,
+  ShieldCheck,
 } from "lucide-react";
 
 function App() {
@@ -38,6 +40,16 @@ function App() {
           */}
           {currentUser.role === "admin" && (
             <>
+              <button
+                onClick={() => setActiveTab("logs")}
+                className={`flex items-center gap-2 px-4 py-2 text-sm font-bold transition cursor-pointer ${
+                  activeTab === "logs"
+                    ? "bg-[#1E2B3C] text-[#FFDB58]"
+                    : "text-[#1E2B3C] hover:bg-[#FAF8F1]"
+                }`}
+              >
+                <ShieldCheck className="h-4 w-4" /> Audit Logs
+              </button>
               <button
                 onClick={() => setActiveTab("dashboard")}
                 className={`flex items-center gap-2 px-4 py-2 text-sm font-bold transition cursor-pointer ${
@@ -124,6 +136,8 @@ function App() {
           <DocumentRepository />
         ) : activeTab === "manage" ? (
           <ManageRecords />
+        ) : activeTab === "logs" ? (
+          <SystemLogs />
         ) : null}
       </div>
     </div>
