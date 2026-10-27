@@ -8,32 +8,33 @@ import {
   Download,
   AlertCircle,
   Building2,
-  Filter,
   Search,
-  X,
+  Lock,
+  Reply,
 } from "lucide-react";
 
-// Mock data representing documents routed to Central Computing Services
 const initialInbox = [
   {
-    id: `MICT-EDMS-${Math.floor(100000 + Math.random() * 900000)}`, // Simulating the one just sent
-    title: "Memo from President's Office regarding ICT Infrastructure",
-    category: "Executive Directive",
+    id: `MICT-EDMS-${Math.floor(100000 + Math.random() * 900000)}`,
+    title: "Urgent: Cybersecurity Risk Assessment Q4",
+    category: "Technical Specs",
     dispatchedBy: "Central Registry",
-    dispatchTime: new Date(Date.now() - 1000 * 60 * 15).toLocaleString(), // 15 mins ago
+    dispatchTime: new Date(Date.now() - 1000 * 60 * 5).toLocaleString(),
     status: "UNREAD",
     readTime: null,
-    urgency: "High",
+    urgency: "Urgent",
+    securityLevel: "Confidential",
   },
   {
     id: "MICT-EDMS-883921",
     title: "Q3 Departmental Hardware Audit Requirements",
     category: "Administrative",
     dispatchedBy: "Central Registry",
-    dispatchTime: new Date(Date.now() - 1000 * 60 * 60 * 48).toLocaleString(), // 2 days ago
+    dispatchTime: new Date(Date.now() - 1000 * 60 * 60 * 48).toLocaleString(),
     status: "READ",
     readTime: new Date(Date.now() - 1000 * 60 * 60 * 47).toLocaleString(),
     urgency: "Standard",
+    securityLevel: "Internal",
   },
 ];
 
@@ -41,22 +42,34 @@ export default function DepartmentInbox() {
   const [inboxItems, setInboxItems] = useState(initialInbox);
   const [selectedDoc, setSelectedDoc] = useState(null);
   const [receiptNotification, setReceiptNotification] = useState(null);
+  const [pinModalDoc, setPinModalDoc] = useState(null);
+  const [pinInput, setPinInput] = useState("");
 
-  const handleViewDocument = (doc) => {
+  const handleSelectDocument = (doc) => {
+    if (doc.securityLevel === "Confidential" && doc.status === "UNREAD") {
+      setPinModalDoc(doc);
+    } else {
+      openDocument(doc);
+    }
+  };
+
+  const handlePinSubmit = (e) => {
+    e.preventDefault();
+    openDocument(pinModalDoc);
+    setPinModalDoc(null);
+    setPinInput("");
+  };
+
+  const openDocument = (doc) => {
     const now = new Date().toLocaleString();
-
-    // If it's the first time opening it, trigger the Read Receipt
     if (doc.status === "UNREAD") {
       const updatedDoc = { ...doc, status: "READ", readTime: now };
-
       setInboxItems((prev) =>
         prev.map((item) => (item.id === doc.id ? updatedDoc : item)),
       );
       setSelectedDoc(updatedDoc);
-
-      // Flash a notification to prove the system logged the read receipt
       setReceiptNotification(
-        `Read receipt for ${doc.id} logged and transmitted to Central Registry at ${now}`,
+        `Read receipt logged and transmitted to sender at ${now}`,
       );
       setTimeout(() => setReceiptNotification(null), 6000);
     } else {
@@ -67,8 +80,7 @@ export default function DepartmentInbox() {
   const unreadCount = inboxItems.filter((i) => i.status === "UNREAD").length;
 
   return (
-    <div className="min-h-screen bg-[#F2EEE3] font-sans pb-16">
-      {/* Top Banner */}
+    <div className="min-h-screen bg-[#F2EEE3] font-sans pb-16 relative">
       <header className="bg-[#1E2B3C] text-[#F2EEE3] border-b-4 border-[#FFDB58]">
         <div className="max-w-6xl mx-auto px-6 py-6 flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -93,9 +105,7 @@ export default function DepartmentInbox() {
       </header>
 
       <main className="max-w-6xl mx-auto px-6 pt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* ====================================================
-            LEFT COLUMN: Inbox List
-            ==================================================== */}
+        {/* LEFT COLUMN: Inbox List */}
         <div className="lg:col-span-1 bg-white border border-[#DDD5BE] shadow-sm flex flex-col h-[80vh]">
           <div className="bg-[#FAF8F1] border-b border-[#DDD5BE] p-4 flex flex-col gap-3">
             <div className="relative">
@@ -106,39 +116,24 @@ export default function DepartmentInbox() {
                 className="w-full pl-9 pr-3 py-2 text-sm border border-[#DDD5BE] focus:outline-none focus:border-[#008000]"
               />
             </div>
-            <div className="flex gap-2">
-              <button className="flex-1 bg-[#1E2B3C] text-[#FFDB58] text-xs font-bold uppercase tracking-wider py-2">
-                All
-              </button>
-              <button className="flex-1 bg-white border border-[#DDD5BE] text-[#5B5240] text-xs font-bold uppercase tracking-wider py-2 hover:bg-[#FAF8F1]">
-                Unread
-              </button>
-            </div>
           </div>
-
           <div className="flex-1 overflow-y-auto">
             {inboxItems.map((doc) => (
               <div
                 key={doc.id}
-                onClick={() => handleViewDocument(doc)}
-                className={`p-4 border-b border-[#EDE7D6] cursor-pointer transition ${
-                  selectedDoc?.id === doc.id
-                    ? "bg-[#1E2B3C] text-white" // Active selection state
-                    : doc.status === "UNREAD"
-                      ? "bg-white hover:bg-[#FAF8F1]" // Unread state
-                      : "bg-[#FAF8F1] opacity-75 hover:opacity-100" // Read state
-                }`}
+                onClick={() => handleSelectDocument(doc)}
+                className={`p-4 border-b border-[#EDE7D6] cursor-pointer transition ${selectedDoc?.id === doc.id ? "bg-[#1E2B3C] text-white" : doc.status === "UNREAD" ? "bg-white hover:bg-[#FAF8F1]" : "bg-[#FAF8F1] opacity-75 hover:opacity-100"}`}
               >
                 <div className="flex items-start gap-3">
                   <div className="mt-1 shrink-0">
-                    {doc.status === "UNREAD" ? (
-                      <Mail
-                        className={`h-5 w-5 ${selectedDoc?.id === doc.id ? "text-[#FFDB58]" : "text-[#008000]"}`}
+                    {doc.securityLevel === "Confidential" ? (
+                      <Lock
+                        className={`h-5 w-5 ${selectedDoc?.id === doc.id ? "text-[#FFDB58]" : "text-[#dc2626]"}`}
                       />
+                    ) : doc.status === "UNREAD" ? (
+                      <Mail className="h-5 w-5 text-[#008000]" />
                     ) : (
-                      <MailOpen
-                        className={`h-5 w-5 ${selectedDoc?.id === doc.id ? "text-[#B9C2CC]" : "text-[#8B7F63]"}`}
-                      />
+                      <MailOpen className="h-5 w-5 text-[#8B7F63]" />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -148,11 +143,10 @@ export default function DepartmentInbox() {
                       >
                         {doc.id}
                       </p>
-                      {doc.urgency === "High" && doc.status === "UNREAD" && (
-                        <span
-                          className="h-2 w-2 rounded-full bg-[#dc2626]"
-                          title="High Urgency"
-                        />
+                      {doc.urgency === "Urgent" && doc.status === "UNREAD" && (
+                        <span className="text-[10px] font-black uppercase bg-[#dc2626] text-white px-1.5 rounded animate-pulse">
+                          Urgent
+                        </span>
                       )}
                     </div>
                     <p
@@ -173,17 +167,14 @@ export default function DepartmentInbox() {
           </div>
         </div>
 
-        {/* ====================================================
-            RIGHT COLUMN: Document Viewer
-            ==================================================== */}
+        {/* RIGHT COLUMN: Document Viewer */}
         <div className="lg:col-span-2">
-          {/* Notification Toast */}
           {receiptNotification && (
             <div className="mb-4 bg-[#008000] text-white p-4 flex items-start gap-3 shadow-md animate-in slide-in-from-top-2">
               <CheckCheck className="h-5 w-5 shrink-0" />
               <div>
                 <p className="text-sm font-bold uppercase tracking-wider text-[#FFDB58] mb-0.5">
-                  Automated Action Logged
+                  Audit Trail Logged
                 </p>
                 <p className="text-sm font-medium">{receiptNotification}</p>
               </div>
@@ -192,17 +183,25 @@ export default function DepartmentInbox() {
 
           {selectedDoc ? (
             <div className="bg-white border border-[#DDD5BE] shadow-sm h-[80vh] flex flex-col">
-              {/* Document Header Info */}
+              {selectedDoc.urgency === "Urgent" && (
+                <div className="bg-[#dc2626] text-white px-6 py-2 flex items-center justify-center gap-2 text-sm font-bold uppercase tracking-wider">
+                  <AlertCircle className="h-4 w-4" /> Priority Action Required
+                </div>
+              )}
               <div className="bg-[#FAF8F1] border-b border-[#DDD5BE] p-6">
                 <div className="flex justify-between items-start mb-4">
                   <h2 className="text-xl font-bold text-[#1E2B3C] leading-tight">
                     {selectedDoc.title}
                   </h2>
-                  <button className="bg-[#1E2B3C] text-[#FFDB58] px-4 py-2 text-sm font-bold flex items-center gap-2 hover:bg-[#26374C] transition shrink-0 cursor-pointer">
-                    <Download className="h-4 w-4" /> Download PDF
-                  </button>
+                  <div className="flex gap-2 shrink-0">
+                    <button className="bg-white text-[#1E2B3C] border border-[#DDD5BE] px-4 py-2 text-sm font-bold flex items-center gap-2 hover:bg-[#FAF8F1] transition cursor-pointer">
+                      <Reply className="h-4 w-4" /> Reply & Attach
+                    </button>
+                    <button className="bg-[#1E2B3C] text-[#FFDB58] px-4 py-2 text-sm font-bold flex items-center gap-2 hover:bg-[#26374C] transition cursor-pointer">
+                      <Download className="h-4 w-4" /> Download
+                    </button>
+                  </div>
                 </div>
-
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
                     <p className="text-xs font-bold uppercase tracking-wider text-[#8B7F63]">
@@ -214,35 +213,20 @@ export default function DepartmentInbox() {
                   </div>
                   <div>
                     <p className="text-xs font-bold uppercase tracking-wider text-[#8B7F63]">
-                      Category
+                      Security / Category
                     </p>
-                    <p className="font-semibold text-[#1E2B3C]">
-                      {selectedDoc.category}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-wider text-[#8B7F63]">
-                      Dispatched
-                    </p>
-                    <p className="font-semibold text-[#1E2B3C]">
-                      {selectedDoc.dispatchTime}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-wider text-[#8B7F63]">
-                      Read Receipt
-                    </p>
-                    <p className="font-bold text-[#008000] flex items-center gap-1">
-                      <CheckCheck className="h-4 w-4" /> {selectedDoc.readTime}
+                    <p className="font-semibold flex items-center gap-1 text-[#1E2B3C]">
+                      {selectedDoc.securityLevel === "Confidential" && (
+                        <Lock className="h-3 w-3 text-[#dc2626]" />
+                      )}
+                      {selectedDoc.securityLevel} · {selectedDoc.category}
                     </p>
                   </div>
                 </div>
               </div>
 
-              {/* Simulated PDF Viewer Area */}
               <div className="flex-1 bg-gray-200 p-8 flex items-center justify-center border-t border-[#DDD5BE] overflow-hidden">
                 <div className="bg-white w-full max-w-lg h-full shadow-lg border border-gray-300 p-8 flex flex-col">
-                  {/* Fake Document Content */}
                   <div className="border-b-2 border-gray-800 pb-4 mb-6 flex justify-between items-end">
                     <div>
                       <h1 className="text-2xl font-serif font-bold">
@@ -252,34 +236,26 @@ export default function DepartmentInbox() {
                         Government of Zimbabwe
                       </p>
                     </div>
-                    <div className="h-12 w-12 border-2 border-gray-800 rounded-full flex items-center justify-center">
-                      <span className="text-xs font-bold">SEAL</span>
-                    </div>
+                    {selectedDoc.securityLevel === "Confidential" && (
+                      <div className="border-2 border-red-600 text-red-600 px-2 py-1 text-xs font-black uppercase">
+                        Confidential
+                      </div>
+                    )}
                   </div>
                   <div className="space-y-4 font-serif text-sm">
                     <p>
-                      <strong>TO:</strong> Director, Central Computing Services
-                    </p>
-                    <p>
-                      <strong>FROM:</strong> President's Office
-                    </p>
-                    <p>
-                      <strong>DATE:</strong>{" "}
-                      {selectedDoc.dispatchTime.split(",")[0]}
+                      <strong>TO:</strong> Central Computing Services
                     </p>
                     <p>
                       <strong>SUBJECT:</strong> {selectedDoc.title}
                     </p>
                     <hr />
                     <p className="text-justify leading-relaxed mt-4">
-                      This memorandum serves as an official directive regarding
-                      the imminent expansion of ICT infrastructure across
-                      provincial registries. You are hereby requested to
-                      evaluate the attached technical requirements...
+                      Please review the attached parameters and append your
+                      departmental approval to the routing chain.
                     </p>
                     <div className="h-4 w-3/4 bg-gray-200 mt-2 rounded"></div>
                     <div className="h-4 w-full bg-gray-200 mt-2 rounded"></div>
-                    <div className="h-4 w-5/6 bg-gray-200 mt-2 rounded"></div>
                   </div>
                 </div>
               </div>
@@ -292,13 +268,53 @@ export default function DepartmentInbox() {
               </h2>
               <p className="text-sm text-[#5B5240] mt-2 max-w-sm">
                 Select a document from your inbox to view its contents. Unread
-                documents will automatically trigger a read receipt to the
-                sender upon viewing.
+                documents trigger a read receipt.
               </p>
             </div>
           )}
         </div>
       </main>
+
+      {/* PIN Verification Modal */}
+      {pinModalDoc && (
+        <div className="fixed inset-0 bg-[#1E2B3C]/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-white border-t-4 border-[#dc2626] shadow-2xl w-full max-w-sm overflow-hidden flex flex-col p-6 text-center animate-in zoom-in-95">
+            <Lock className="h-10 w-10 text-[#dc2626] mx-auto mb-3" />
+            <h2 className="text-lg font-bold text-[#1E2B3C]">
+              Confidential Document
+            </h2>
+            <p className="text-sm text-[#5B5240] mt-1 mb-6">
+              Enter your Department PIN to decrypt and access this payload.
+            </p>
+            <form onSubmit={handlePinSubmit}>
+              <input
+                type="password"
+                required
+                autoFocus
+                value={pinInput}
+                onChange={(e) => setPinInput(e.target.value)}
+                placeholder="Enter PIN (e.g., 1234)"
+                className="w-full text-center tracking-[0.5em] p-3 text-lg font-bold border border-[#DDD5BE] bg-[#FAF8F1] focus:outline-none focus:border-[#dc2626] mb-4"
+              />
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setPinModalDoc(null)}
+                  className="flex-1 py-3 text-sm font-bold text-[#5B5240] hover:bg-[#FAF8F1] border border-[#DDD5BE] cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 py-3 text-sm font-bold text-white bg-[#dc2626] hover:bg-red-700 cursor-pointer"
+                >
+                  Decrypt
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
