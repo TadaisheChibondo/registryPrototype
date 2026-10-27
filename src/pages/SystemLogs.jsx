@@ -52,7 +52,7 @@ export default function SystemLogs() {
         <div className="flex items-center gap-3">
           <Terminal className="h-6 w-6 text-green-400" />
           <h1 className="text-lg font-bold tracking-widest uppercase">
-            MICT Core Audit Server
+            MICTPCS Core Audit Server
           </h1>
         </div>
         <div className="flex items-center gap-4 text-xs">

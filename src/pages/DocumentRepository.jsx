@@ -194,7 +194,7 @@ export default function DocumentRepository() {
         <div className="max-w-[1400px] mx-auto px-6 py-6 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="h-11 w-11 shrink-0 bg-[#FFDB58] flex items-center justify-center text-sm font-bold tracking-wide text-[#1E2B3C]">
-              MICT
+              MICTPCS
             </div>
             <div>
               <p className="text-xs font-bold uppercase tracking-widest text-[#FFDB58]">

@@ -89,25 +89,30 @@ export default function IntakeWorkspace() {
 
   return (
     <div className="min-h-screen bg-[#F2EEE3] font-sans pb-16">
-      <header className="bg-[#1E2B3C] text-[#F2EEE3] border-b-4 border-[#FFDB58]">
+      {/* Official Branded Header */}
+      <header className="bg-[#008000] text-white border-b-4 border-[#FFDB58]">
         <div className="max-w-4xl mx-auto px-6 py-6 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="h-11 w-11 shrink-0 bg-[#FFDB58] flex items-center justify-center text-sm font-bold tracking-wide text-[#1E2B3C]">
-              MICT
+          <div className="flex items-center gap-6">
+            <div className="h-14 w-14 shrink-0 bg-white rounded-full border-2 border-[#FFDB58] flex items-center justify-center text-[10px] font-black text-[#008000] text-center leading-tight">
+              ZIM
+              <br />
+              COAT
             </div>
-            <div>
-              <p className="text-xs font-bold uppercase tracking-widest text-[#FFDB58]">
-                Registry Digital Intake
-              </p>
-              <h1 className="text-2xl font-bold leading-tight">
-                Document Scanning & Routing
-              </h1>
+            <div className="flex items-center gap-4 border-l border-white/30 pl-6">
+              <div>
+                <h1 className="text-2xl font-bold leading-tight">
+                  Document Scanning & Routing
+                </h1>
+                <p className="text-sm text-green-100 mt-0.5">
+                  Ministry of Information Communication Technology
+                </p>
+              </div>
             </div>
           </div>
           {workflowStep !== "UPLOAD" && (
             <button
               onClick={resetWorkspace}
-              className="flex items-center gap-1.5 text-xs font-bold bg-[#26374C] hover:bg-[#3A4C63] text-[#F2EEE3] px-3 py-2 border border-[#3A4C63] transition cursor-pointer"
+              className="flex items-center gap-1.5 text-xs font-bold bg-[#1E2B3C] hover:bg-[#26374C] text-[#FFDB58] px-3 py-2 transition cursor-pointer"
             >
               <RotateCcw className="h-3.5 w-3.5" /> Start New Intake
             </button>

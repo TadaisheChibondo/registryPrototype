@@ -81,24 +81,29 @@ export default function DepartmentInbox() {
 
   return (
     <div className="min-h-screen bg-[#F2EEE3] font-sans pb-16 relative">
-      <header className="bg-[#1E2B3C] text-[#F2EEE3] border-b-4 border-[#FFDB58]">
+      {/* Official Branded Header */}
+      <header className="bg-[#008000] text-white border-b-4 border-[#FFDB58]">
         <div className="max-w-6xl mx-auto px-6 py-6 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="h-11 w-11 shrink-0 bg-[#FFDB58] flex items-center justify-center text-sm font-bold tracking-wide text-[#1E2B3C]">
-              MICT
+          <div className="flex items-center gap-6">
+            <div className="h-14 w-14 shrink-0 bg-white rounded-full border-2 border-[#FFDB58] flex items-center justify-center text-[10px] font-black text-[#008000] text-center leading-tight">
+              ZIM
+              <br />
+              COAT
             </div>
-            <div>
-              <p className="text-xs font-bold uppercase tracking-widest text-[#FFDB58]">
-                Central Computing Services
-              </p>
-              <h1 className="text-2xl font-bold leading-tight flex items-center gap-3">
-                Departmental Secure Inbox
-                {unreadCount > 0 && (
-                  <span className="bg-[#dc2626] text-white text-xs px-2 py-1 rounded-full font-black">
-                    {unreadCount} New
-                  </span>
-                )}
-              </h1>
+            <div className="flex items-center gap-4 border-l border-white/30 pl-6">
+              <div>
+                <h1 className="text-2xl font-bold leading-tight flex items-center gap-3">
+                  Departmental Secure Inbox
+                  {unreadCount > 0 && (
+                    <span className="bg-[#dc2626] text-white text-xs px-2 py-1 rounded-full font-black">
+                      {unreadCount} New
+                    </span>
+                  )}
+                </h1>
+                <p className="text-sm text-green-100 mt-0.5">
+                  Central Computing Services
+                </p>
+              </div>
             </div>
           </div>
         </div>
