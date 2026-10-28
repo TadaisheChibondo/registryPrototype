@@ -104,7 +104,8 @@ export default function IntakeWorkspace() {
                   Document Scanning & Routing
                 </h1>
                 <p className="text-sm text-green-100 mt-0.5">
-                  Ministry of Information Communication Technology
+                  Ministry of Information Communication Technology Postal and
+                  Courier Services
                 </p>
               </div>
             </div>

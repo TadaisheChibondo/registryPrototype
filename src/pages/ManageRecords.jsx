@@ -1,12 +1,17 @@
 import React, { useState } from "react";
 import {
   FilePlus,
-  Archive,
   Search,
   FileText,
   CheckCircle2,
   Lock,
   Clock,
+  X,
+  Activity,
+  User,
+  MapPin,
+  Send,
+  Eye,
 } from "lucide-react";
 import { folders as initialFolders } from "../data/mockData";
 
@@ -14,6 +19,9 @@ export default function ManageRecords() {
   const [folderList, setFolderList] = useState(initialFolders);
   const [searchQuery, setSearchQuery] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+
+  // New state to manage the Lifeline Modal
+  const [selectedDoc, setSelectedDoc] = useState(null);
 
   const [newRecord, setNewRecord] = useState({
     id: `MICT-EDMS-2026-${Math.floor(1000 + Math.random() * 9000)}`,
@@ -42,13 +50,15 @@ export default function ManageRecords() {
     setTimeout(() => setSuccessMessage(""), 5000);
   };
 
-  const handleArchiveRecord = (id) => {
+  const handleArchiveRecord = (e, id) => {
+    e.stopPropagation(); // Prevents the modal from opening when clicking the action button
     setFolderList((prev) =>
       prev.map((f) => (f.id === id ? { ...f, status: "Archived" } : f)),
     );
   };
 
-  const handleRequestDeletion = (id) => {
+  const handleRequestDeletion = (e, id) => {
+    e.stopPropagation();
     setFolderList((prev) =>
       prev.map((f) =>
         f.id === id ? { ...f, status: "Pending Deletion Approval" } : f,
@@ -67,7 +77,6 @@ export default function ManageRecords() {
       {/* Official Branded Header */}
       <header className="bg-[#008000] text-white border-b-4 border-[#FFDB58]">
         <div className="max-w-7xl mx-auto px-8 py-6 flex items-center gap-6">
-          {/* Simulated Zimbabwe Coat of Arms Placeholder */}
           <div className="h-14 w-14 shrink-0 bg-white rounded-full border-2 border-[#FFDB58] flex items-center justify-center text-[10px] font-black text-[#008000] text-center leading-tight">
             ZIM
             <br />
@@ -79,7 +88,8 @@ export default function ManageRecords() {
                 Record Management Console
               </h1>
               <p className="text-sm text-green-100 mt-0.5">
-                Ministry of Information Communication Technology
+                Ministry of Information Communication Technology Postal and
+                Courier Services
               </p>
             </div>
           </div>
@@ -169,11 +179,13 @@ export default function ManageRecords() {
                     return (
                       <tr
                         key={folder.id}
-                        className="border-b border-[#EDE7D6] hover:bg-[#FAF8F1] transition"
+                        onClick={() => setSelectedDoc(folder)}
+                        className="border-b border-[#EDE7D6] hover:bg-[#F7F4EA] transition cursor-pointer group"
+                        title="Click to view full lifeline"
                       >
                         <td className="px-6 py-4">
-                          <p className="text-sm font-bold text-[#1E2B3C] flex items-center gap-2">
-                            <FileText className="h-4 w-4 text-[#8B7F63]" />{" "}
+                          <p className="text-sm font-bold text-[#1E2B3C] flex items-center gap-2 group-hover:text-[#008000] transition">
+                            <Activity className="h-4 w-4 text-[#8B7F63] group-hover:text-[#008000]" />{" "}
                             {folder.id}
                           </p>
                           <p className="text-sm text-[#6B7280] truncate max-w-[250px] mt-0.5">
@@ -200,14 +212,18 @@ export default function ManageRecords() {
                           {isAvailable && (
                             <>
                               <button
-                                onClick={() => handleArchiveRecord(folder.id)}
-                                className="text-xs font-bold text-[#1E2B3C] border border-[#1E2B3C] px-3 py-1.5 hover:bg-[#FAF8F1] transition cursor-pointer"
+                                onClick={(e) =>
+                                  handleArchiveRecord(e, folder.id)
+                                }
+                                className="text-xs font-bold text-[#1E2B3C] border border-[#1E2B3C] px-3 py-1.5 hover:bg-[#1E2B3C] hover:text-white transition cursor-pointer"
                               >
                                 Archive
                               </button>
                               <button
-                                onClick={() => handleRequestDeletion(folder.id)}
-                                className="text-xs font-bold text-[#dc2626] border border-[#dc2626] px-3 py-1.5 hover:bg-red-50 transition cursor-pointer"
+                                onClick={(e) =>
+                                  handleRequestDeletion(e, folder.id)
+                                }
+                                className="text-xs font-bold text-[#dc2626] border border-[#dc2626] px-3 py-1.5 hover:bg-[#dc2626] hover:text-white transition cursor-pointer"
                                 title="Requires Director Approval"
                               >
                                 Request Deletion
@@ -224,6 +240,162 @@ export default function ManageRecords() {
           </div>
         </div>
       </main>
+
+      {/* =========================================
+          DOCUMENT LIFELINE MODAL (AUDIT TRAIL)
+          ========================================= */}
+      {selectedDoc && (
+        <div className="fixed inset-0 bg-[#1E2B3C]/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-white border border-[#DDD5BE] shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            {/* Modal Header */}
+            <div className="bg-[#1E2B3C] p-6 flex justify-between items-start text-[#F2EEE3] border-b-4 border-[#FFDB58]">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <Activity className="h-5 w-5 text-[#FFDB58]" />
+                  <span className="text-sm font-bold text-[#FFDB58] uppercase tracking-wider">
+                    Document Lifeline Log
+                  </span>
+                </div>
+                <h2 className="text-xl font-bold">{selectedDoc.id}</h2>
+                <p className="text-sm text-[#B9C2CC] mt-1 max-w-md truncate">
+                  {selectedDoc.title}
+                </p>
+              </div>
+              <button
+                onClick={() => setSelectedDoc(null)}
+                className="text-[#B9C2CC] hover:text-white transition bg-[#26374C] p-1.5 cursor-pointer border border-[#3A4C63]"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Modal Body - Lifeline Timeline */}
+            <div className="p-8 overflow-y-auto bg-[#FAF8F1]">
+              <div className="relative border-l-2 border-[#DDD5BE] ml-4 space-y-8 pb-4">
+                {/* Event 3: Read Receipt (Simulated latest action) */}
+                <div className="relative pl-8">
+                  <div className="absolute -left-[11px] top-1 h-5 w-5 rounded-full border-4 border-[#FAF8F1] bg-[#008000]" />
+                  <p className="text-xs font-bold text-[#008000] mb-1 uppercase tracking-wider flex items-center gap-1.5">
+                    <Eye className="h-4 w-4" /> Accessed & Viewed
+                  </p>
+                  <p className="text-[#1E2B3C] font-bold text-lg">
+                    Document Read Receipt Logged
+                  </p>
+                  <div className="bg-white border border-[#DDD5BE] p-4 mt-3 grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-[10px] font-black uppercase text-[#8B7F63] tracking-widest mb-0.5">
+                        Opened By
+                      </p>
+                      <p className="text-sm font-bold text-[#1E2B3C] flex items-center gap-1.5">
+                        <User className="h-3.5 w-3.5" /> Dir. S. Chigumba
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-black uppercase text-[#8B7F63] tracking-widest mb-0.5">
+                        Location / IP
+                      </p>
+                      <p className="text-sm font-bold text-[#1E2B3C] flex items-center gap-1.5">
+                        <MapPin className="h-3.5 w-3.5" /> 10.0.0.42 (Internal)
+                      </p>
+                    </div>
+                    <div className="col-span-2">
+                      <p className="text-[10px] font-black uppercase text-[#8B7F63] tracking-widest mb-0.5">
+                        Timestamp
+                      </p>
+                      <p className="text-sm font-bold text-[#1E2B3C] flex items-center gap-1.5">
+                        <Clock className="h-3.5 w-3.5" />{" "}
+                        {new Date(Date.now() - 1000 * 60 * 30).toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Event 2: Routed / Dispatched */}
+                <div className="relative pl-8">
+                  <div className="absolute -left-[11px] top-1 h-5 w-5 rounded-full border-4 border-[#FAF8F1] bg-[#8A6D00]" />
+                  <p className="text-xs font-bold text-[#8A6D00] mb-1 uppercase tracking-wider flex items-center gap-1.5">
+                    <Send className="h-4 w-4" /> Routed
+                  </p>
+                  <p className="text-[#1E2B3C] font-bold text-lg">
+                    Dispatched to Destination
+                  </p>
+                  <div className="bg-white border border-[#DDD5BE] p-4 mt-3 grid grid-cols-2 gap-4 opacity-90">
+                    <div>
+                      <p className="text-[10px] font-black uppercase text-[#8B7F63] tracking-widest mb-0.5">
+                        Sent By
+                      </p>
+                      <p className="text-sm font-bold text-[#1E2B3C] flex items-center gap-1.5">
+                        <User className="h-3.5 w-3.5" /> M. Sibanda (Registry)
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-black uppercase text-[#8B7F63] tracking-widest mb-0.5">
+                        Routed To
+                      </p>
+                      <p className="text-sm font-bold text-[#1E2B3C] flex items-center gap-1.5">
+                        <MapPin className="h-3.5 w-3.5" />{" "}
+                        {selectedDoc.checkedOutTo?.entity ||
+                          "Ministry of Finance"}
+                      </p>
+                    </div>
+                    <div className="col-span-2">
+                      <p className="text-[10px] font-black uppercase text-[#8B7F63] tracking-widest mb-0.5">
+                        Timestamp
+                      </p>
+                      <p className="text-sm font-bold text-[#1E2B3C] flex items-center gap-1.5">
+                        <Clock className="h-3.5 w-3.5" />{" "}
+                        {new Date(
+                          Date.now() - 1000 * 60 * 60 * 24,
+                        ).toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Event 1: Creation */}
+                <div className="relative pl-8">
+                  <div className="absolute -left-[11px] top-1 h-5 w-5 rounded-full border-4 border-[#FAF8F1] bg-[#1E2B3C]" />
+                  <p className="text-xs font-bold text-[#1E2B3C] mb-1 uppercase tracking-wider flex items-center gap-1.5">
+                    <FilePlus className="h-4 w-4" /> Digitized
+                  </p>
+                  <p className="text-[#1E2B3C] font-bold text-lg">
+                    Record Created in System
+                  </p>
+                  <div className="bg-white border border-[#DDD5BE] p-4 mt-3 grid grid-cols-2 gap-4 opacity-80">
+                    <div>
+                      <p className="text-[10px] font-black uppercase text-[#8B7F63] tracking-widest mb-0.5">
+                        Created By
+                      </p>
+                      <p className="text-sm font-bold text-[#1E2B3C] flex items-center gap-1.5">
+                        <User className="h-3.5 w-3.5" /> System Admin
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-black uppercase text-[#8B7F63] tracking-widest mb-0.5">
+                        IP Address
+                      </p>
+                      <p className="text-sm font-bold text-[#1E2B3C] flex items-center gap-1.5">
+                        <MapPin className="h-3.5 w-3.5" /> 192.168.1.45
+                      </p>
+                    </div>
+                    <div className="col-span-2">
+                      <p className="text-[10px] font-black uppercase text-[#8B7F63] tracking-widest mb-0.5">
+                        Timestamp
+                      </p>
+                      <p className="text-sm font-bold text-[#1E2B3C] flex items-center gap-1.5">
+                        <Clock className="h-3.5 w-3.5" />{" "}
+                        {new Date(
+                          Date.now() - 1000 * 60 * 60 * 72,
+                        ).toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

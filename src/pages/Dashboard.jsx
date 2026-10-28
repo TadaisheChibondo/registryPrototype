@@ -17,18 +17,24 @@ export default function Dashboard({ onNavigate }) {
       <header className="bg-[#008000] text-white border-b-4 border-[#FFDB58]">
         <div className="max-w-7xl mx-auto px-8 py-6 flex items-center justify-between gap-6">
           <div className="flex items-center gap-6">
-            <div className="h-14 w-14 shrink-0 bg-white rounded-full border-2 border-[#FFDB58] flex items-center justify-center text-[10px] font-black text-[#008000] text-center leading-tight">
+            {/* <div className="h-14 w-14 shrink-0 bg-white rounded-full border-2 border-[#FFDB58] flex items-center justify-center text-[10px] font-black text-[#008000] text-center leading-tight">
               ZIM
               <br />
               COAT
-            </div>
+            </div> */}
+            <img
+              src="/coatOfArms.png"
+              alt="Zimbabwe Coat of Arms"
+              className="h-14 w-14 shrink-0 bg-white rounded-full border-2 border-[#FFDB58] object-contain p-1"
+            />
             <div className="flex items-center gap-4 border-l border-white/30 pl-6">
               <div>
                 <h1 className="text-2xl font-bold leading-tight">
                   Electronic Document Management
                 </h1>
                 <p className="text-sm text-green-100 mt-0.5">
-                  Ministry of Information Communication Technology
+                  Ministry of Information Communication Technology Postal and
+                  Courier Services
                 </p>
               </div>
             </div>
