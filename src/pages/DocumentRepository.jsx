@@ -189,33 +189,37 @@ export default function DocumentRepository() {
 
   return (
     <div className="min-h-screen bg-[#F2EEE3] font-sans pb-12 flex flex-col relative">
-      {/* Header */}
-      <header className="bg-[#1E2B3C] text-[#F2EEE3] border-b-4 border-[#FFDB58]">
+      {/* Official Branded Header */}
+      <header className="bg-[#008000] text-white border-b-4 border-[#FFDB58]">
         <div className="max-w-[1400px] mx-auto px-6 py-6 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="h-11 w-11 shrink-0 bg-[#FFDB58] flex items-center justify-center text-sm font-bold tracking-wide text-[#1E2B3C]">
-              MICTPCS
+          <div className="flex items-center gap-6">
+            <div className="h-14 w-14 shrink-0 bg-white rounded-full border-2 border-[#FFDB58] flex items-center justify-center text-[10px] font-black text-[#008000] text-center leading-tight">
+              ZIM
+              <br />
+              COAT
             </div>
-            <div>
-              <p className="text-xs font-bold uppercase tracking-widest text-[#FFDB58]">
-                Centralized Storage
-              </p>
-              <h1 className="text-2xl font-bold leading-tight">
-                Master Document Repository
-              </h1>
+            <div className="flex items-center gap-4 border-l border-white/30 pl-6">
+              <div>
+                <h1 className="text-2xl font-bold leading-tight">
+                  Master Document Repository
+                </h1>
+                <p className="text-sm text-green-100 mt-0.5">
+                  Ministry of Information Communication Technology
+                </p>
+              </div>
             </div>
           </div>
           <div className="flex gap-3">
             <button
               onClick={() => setShowCategoryModal(true)}
-              className="bg-[#26374C] hover:bg-[#3A4C63] text-white px-4 py-2 text-sm font-bold transition flex items-center gap-2 border border-[#3A4C63] cursor-pointer"
+              className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 text-sm font-bold transition flex items-center gap-2 border border-white/20 cursor-pointer"
             >
               <Plus className="h-4 w-4" /> New Category
             </button>
             <button
               onClick={() => setShowUploadModal(true)}
               disabled={!activeFolder}
-              className="bg-[#008000] hover:bg-[#006b00] disabled:opacity-50 text-white px-4 py-2 text-sm font-bold transition flex items-center gap-2 shadow-sm cursor-pointer"
+              className="bg-[#1E2B3C] hover:bg-[#26374C] disabled:opacity-50 text-[#FFDB58] px-4 py-2 text-sm font-bold transition flex items-center gap-2 shadow-sm cursor-pointer"
             >
               <Plus className="h-4 w-4" /> Upload Document
             </button>
@@ -430,7 +434,7 @@ export default function DocumentRepository() {
               <h2 className="text-lg font-bold">Create New Category</h2>
               <button
                 onClick={() => setShowCategoryModal(false)}
-                className="text-[#B9C2CC] hover:text-white transition"
+                className="text-[#B9C2CC] hover:text-white transition cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -478,7 +482,7 @@ export default function DocumentRepository() {
               </h2>
               <button
                 onClick={() => setShowFolderModal(false)}
-                className="text-[#B9C2CC] hover:text-white transition"
+                className="text-[#B9C2CC] hover:text-white transition cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -524,7 +528,7 @@ export default function DocumentRepository() {
               <h2 className="text-lg font-bold">Upload to {activeFolder}</h2>
               <button
                 onClick={() => setShowUploadModal(false)}
-                className="text-[#B9C2CC] hover:text-white transition"
+                className="text-[#B9C2CC] hover:text-white transition cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>

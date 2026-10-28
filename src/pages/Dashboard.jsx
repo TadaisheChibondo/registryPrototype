@@ -257,21 +257,22 @@ function Stat({ label, value, tint, flag }) {
 }
 
 function ActionCard({ count, label, action, theme, onClick }) {
+  // Styles updated to remove 3D/colored backgrounds and enforce a solid white card with a colored border outline.
   const styles = {
     danger: {
-      card: "border-[#dc2626] border-l-4 bg-red-50/80 text-[#dc2626]",
+      card: "border border-[#dc2626] bg-white text-[#dc2626]",
       dot: "#dc2626",
       count: "text-[#dc2626]",
       button: "text-[#dc2626] hover:text-red-800",
     },
     warning: {
-      card: "border-[#8A6D00] border-l-4 bg-yellow-50/80 text-[#8A6D00]",
+      card: "border border-[#8A6D00] bg-white text-[#8A6D00]",
       dot: "#8A6D00",
       count: "text-[#8A6D00]",
       button: "text-[#8A6D00] hover:text-yellow-900",
     },
     neutral: {
-      card: "border-[#1E2B3C] border-l-4 bg-white text-[#1E2B3C]",
+      card: "border border-[#1E2B3C] bg-white text-[#1E2B3C]",
       dot: "#1E2B3C",
       count: "text-[#1E2B3C]",
       button: "text-[#1E2B3C] hover:text-[#008000]",
@@ -281,7 +282,7 @@ function ActionCard({ count, label, action, theme, onClick }) {
   return (
     <div
       onClick={onClick}
-      className={`border px-5 py-4 shadow-sm transition hover:shadow-md cursor-pointer flex flex-col justify-between gap-3 ${styles.card}`}
+      className={`px-5 py-4 shadow-sm transition hover:shadow-md cursor-pointer flex flex-col justify-between gap-3 ${styles.card}`}
     >
       <div className="flex items-center gap-2">
         <StatusDot color={styles.dot} />
